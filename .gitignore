@@ -89,6 +89,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+benv/
 
 # Spyder project settings
 .spyderproject
@@ -102,3 +103,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# editor specific directories
+/.vscode
+
+# data
+/data
+
+# experimental scripts
+/experiments
