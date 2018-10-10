@@ -1,7 +1,6 @@
 import pymongo  
 from flask import jsonify
 
-
 client = pymongo.MongoClient("mongodb://localhost")
 
 diDatabase = client["diDatabase"]
@@ -29,7 +28,7 @@ def insertEvents(events):
 
 def insertIntoCollection(collectionName, document):
       if collectionName == "events":
-            insertEvent(document)
+            return insertEvent(document)
       else: 
-            diDatabase[collectionName].insert_one(document)
+            return diDatabase[collectionName].insert_one(document)
        
