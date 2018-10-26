@@ -3,11 +3,25 @@ import re
 import random, string
 import costMatrixDijkstra as dij
 from collections import Counter
-# import Levenshtein 
 
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
+
+def insertErrors(errorProbability, sequence):
+    i = 0
+    while i < len(sequence):
+        if random.uniform(0.0, 1.0) < errorProbability:
+            change = random.choice(['delete', 'insert', 'replace'])
+            if change == 'delete':
+                sequence = sequence[:i] + sequence[i + 1:]
+                i -= 1
+            elif change == 'insert':
+                sequence = sequence[:i] + random.choice(string.ascii_lowercase) + sequence[i:]
+            elif change == 'replace':
+                sequence = sequence[:i] + random.choice(string.ascii_lowercase) + sequence[i + 1:]  
+        i += 1 
+    return sequence         
 
 def addInsetions(word):
     number = random.randint(1, len(word))
@@ -92,7 +106,7 @@ def collectStatistics(wordLength, repetitions, wordNumber):
     filename = "../../data/testData_wl" + str(wordLength) + "_wn" + str(wordNumber) + ".txt"
     file = open(filename, "a+")
     
-    for _ in repetitions:
+    for _ in range(repetitions):
         originalSequence = randomword(wordLength)
         sequences = []
         for _ in range(wordNumber):
@@ -107,32 +121,20 @@ def collectStatistics(wordLength, repetitions, wordNumber):
     file.close()
 
 def main():
-    collectStatistics(10, 50, 5)
-    # collectStatistics(20, 50, 5)
-    collectStatistics(10, 50, 6)
-    collectStatistics(10, 50, 7)
-    collectStatistics(10, 50, 8)
-    collectStatistics(10, 50, 9)
-    collectStatistics(10, 50, 10)
-    # originalSequence = randomword(10)
-    # numberOfSequences = 10
-    # sequences = []
-    # for _ in range(numberOfSequences):
-    #     newSequence = addInsetions(originalSequence)
-    #     #newSequence = addDeletions(originalSequence)
-    #     newSequence = addDeletions(newSequence)
-    #     sequences.append(newSequence)
-    #     print(newSequence)
+    originalSequence = randomword(10)
+    numberOfSequences = 5
+    sequences = []
+    for _ in range(numberOfSequences):
+        newSequence = insertErrors(0.3, originalSequence)
+        sequences.append(newSequence)
+        print(newSequence)
+    print(' ')
 
-    # print(' ')
-    # #sequences = ['xanxb','xab','xab','xbab','xbab']
-    # path = dij.timeWarpingPath(sequences)
-    # # matchSequences(path, sequences)
-    # result = extractOriginal(path, sequences)
-    # print(' ')
-    # print('original: ' + originalSequence)
-    # print('newGuess: ' + result)
-    # # print('score: '+ str(Levenshtein.distance(originalSequence, result)))
+    path = dij.timeWarpingPath(sequences)
+    result = extractOriginal(path, sequences)
+    print(' ')
+    print('original: ' + originalSequence)
+    print('newGuess: ' + result)
 
 if __name__ == '__main__':
   main()
