@@ -120,18 +120,19 @@ def timeWarpingPath(localSequences):
     start = list(0 for _ in range(len(sequences)))
     stop = list(len(s) - 1 for s in sequences)
 
-    currentPosition = (charDist(start), start)
+    currentPosition = (charDist(start), start, start) # dist, position, predecessor
     heapq.heappush(nextPosition, currentPosition)
 
     while currentPosition[1] != stop:
         currentPosition = heapq.heappop(nextPosition)
+        if tuple(currentPosition[1]) in predecessors:
+            continue
+        predecessors[tuple(currentPosition[1])] = currentPosition[2]
         for n in neighbours(currentPosition[1]):
-            if tuple(n) not in predecessors:
-                predecessors[tuple(n)] = currentPosition[1]
-                nDist = currentPosition[0] + spaceDist(currentPosition[1], n)
-                # nDist = currentPosition[0] + charDist(n)
-                heapq.heappush(nextPosition, (nDist, n))
+            nDist = currentPosition[0] + spaceDist(currentPosition[1], n)
+            heapq.heappush(nextPosition, (nDist, n, currentPosition[1]))
     
+    print('Djkstra path cost: ' + str(currentPosition[0]))
     path = []
     pathPosition = currentPosition[1]
     path.append(pathPosition)
@@ -148,25 +149,27 @@ def timeWarpingPathAStar(localSequences):
     allDirections = initializeDirections(len(localSequences))
     sequences = localSequences
 
-    # Dijkstra
+    # A*
     predecessors = {}
     nextPosition = []
 
     start = list(0 for _ in range(len(sequences)))
     stop = list(len(s) - 1 for s in sequences)
 
-    currentPosition = (0, start, charDist(start)) # dist with heuristic, position, actualDist
+    currentPosition = (0, start, charDist(start), start) # dist with heuristic, position, actualDist, predecessor
     heapq.heappush(nextPosition, currentPosition)
 
     while currentPosition[1] != stop:
         currentPosition = heapq.heappop(nextPosition)
+        if tuple(currentPosition[1]) in predecessors:
+            continue
+        predecessors[tuple(currentPosition[1])] = currentPosition[3]
         for n in neighbours(currentPosition[1]):
             if tuple(n) not in predecessors:
-                predecessors[tuple(n)] = currentPosition[1]
                 nDist = currentPosition[2] + spaceDist(currentPosition[1], n)
-                # heapq.heappush(nextPosition, (nDist, n))
-                heapq.heappush(nextPosition, (nDist + distHeuristic(n), n, nDist))
+                heapq.heappush(nextPosition, (nDist + distHeuristic(n), n, nDist, currentPosition[1]))
     
+    print('A* path cost: ' + str(currentPosition[2]))
     path = []
     pathPosition = currentPosition[1]
     path.append(pathPosition)
