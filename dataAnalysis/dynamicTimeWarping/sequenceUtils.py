@@ -3,10 +3,60 @@ import string
 import math
 from collections import Counter
 import re
+import datetime
 
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
+
+def addTime(word, averageGap):
+    events = []
+    time = datetime.datetime.now()
+    for letter in word:
+        factor = random.uniform(0.0, 2.0)
+        gap = averageGap * factor
+        time += gap
+        events.append(letter, time)
+    return events
+
+def randomSequence(numberOfEvents, avgSecsBetweenEvents):
+    word = randomword(numberOfEvents)
+    averageGap = datetime.time(0, avgSecsBetweenEvents)
+    events = addTime(word, averageGap)
+    return events
+        
+def insertTimeError(event, maxError):
+    factor = random.uniform(-1.0, 1.0)
+    newTime = event[1]
+    newTime += factor * maxError
+    event[1] = newTime
+    return event
+
+def insertErrorsWithTime(events, errorProbability, maxTimeErrorInSecs):
+    errorEvents = []
+    maxError = datetime.timedelta(0, maxTimeErrorInSecs)
+    for i in range(events):
+        if random.uniform(0.0, 1.0) > errorProbability:
+            event = insertTimeError(events[i], maxError)
+            errorEvents.append(event)
+
+        change = random.choice(['delete', 'insert', 'replace'])
+        if change == 'delete':
+            continue
+        elif change == 'insert':
+            errorEvents.append(insertTimeError(events[i], maxError))
+            newEvent = events[i]
+            newEvent[0] = random.choice(string.ascii_lowercase)
+            if i == 0 or i == len(events) - 1:
+                newEvent = insertTimeError(newEvent, maxError)
+            else:
+                newEvent[1] += (events[i+1][1] - events[i][1]) * random.uniform(0.0, 1.0)
+            errorEvents.append(newEvent)            
+        elif change == 'replace':
+            newEvent = events[i]
+            newEvent[0] = random.choice(string.ascii_lowercase)
+            errorEvents.append(insertTimeError(newEvent, maxError))
+    return sorted(errorEvents, key=lambda x: x[1])
 
 def insertErrors(errorProbability, sequence):
     i = 0
