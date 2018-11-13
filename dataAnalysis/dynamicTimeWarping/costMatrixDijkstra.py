@@ -22,29 +22,45 @@ def charDist(indices):
     chars = set(sequences[i][indices[i]] for i in range(len(sequences)))
     return len(chars) - 1
 
+def charDistWithTime(indices):
+    global sequences
+    chars = set(sequences[i][indices[i]][0] for i in range(len(sequences)))
+    return len(chars) - 1
+
 def spaceDist(lastPosition, nextPosition):
     global sequences
     charList = list(sequences[i][nextPosition[i]] for i in range(len(sequences)) if nextPosition[i] > lastPosition[i])
     spaces = len(sequences) - len(charList)
     return len(set(charList)) - 1 + spaces
 
-def standardDeviation(timestamps):
+def spaceDistWithTime(lastPosition, nextPosition):
+    global sequences
+    charList = list(sequences[i][nextPosition[i]][0] for i in range(len(sequences)) if nextPosition[i] > lastPosition[i])
+    spaces = len(sequences) - len(charList)
+    return len(set(charList)) - 1 + spaces
+
+def averageTime(timestamps):
     referenceTS = timestamps[0]
     allDists = datetime.timedelta(0,0)
     for ts in timestamps:
         allDists += ts - referenceTS
     averageTime = referenceTS + allDists/len(timestamps)
-    standardDev = datetime.timedelta(0,0)
+    return averageTime
+
+def standardDeviation(timestamps):
+    avTime = averageTime(timestamps)
+    standardDevInSecs = 0
     for ts in timestamps:
-        standardDev += math.pow(ts - averageTime, 2)
-    standardDev /= len(ts)
-    return standardDev
+        timeDiff = ts - avTime
+        standardDevInSecs += math.pow(timeDiff.total_seconds(), 2)
+    standardDevInSecs /= len(timestamps)
+    return datetime.timedelta(0, standardDevInSecs)
 
 def withTimeDist(lastPosition, nextPosition, noMatchTimePenalty):
     global sequences
-    eventDist = spaceDist(lastPosition, nextPosition)
-    timestamps = list(sequences[i][nextPosition[i]][1] for i in range(len(sequences)) if nextPosition[i][1] > lastPosition[i][1])
-    timePenalty = standardDeviation(timestamps) + (len(sequences) - len(timestamps)) * noMatchTimePenalty
+    eventDist = spaceDistWithTime(lastPosition, nextPosition)
+    timestamps = list(sequences[i][nextPosition[i]][1] for i in range(len(sequences)) if nextPosition[i] > lastPosition[i])
+    timePenalty = standardDeviation(timestamps).total_seconds() + (len(sequences) - len(timestamps)) * noMatchTimePenalty
     return timePenalty + eventDist
 
 def initializeDirections(dimensions):
@@ -67,7 +83,7 @@ def neighbours(currentPosition):
             neighbours.append(list(sum(x) for x in zip(currentPosition, d)))
     return neighbours
 
-def timeWarpingPathWithTimestamps(eventSequence):
+def aStarTimeWarpingPathWithTimestamps(eventSequence):
     # initialize global variables
     global allDirections
     global sequences
@@ -83,19 +99,19 @@ def timeWarpingPathWithTimestamps(eventSequence):
 
     # this will not impact the path, just the end cost
     startTimestamps = list(s[0][1] for s in sequences)
-    startDist = standardDeviation(startTimestamps) + withTimeDist(start, start, 0)
-    # currentPosition = (startDist, start)
-    currentPosition = (0, start)
+    startDist = standardDeviation(startTimestamps).total_seconds() + charDistWithTime(start)
+    currentPosition = (0, start, startDist, start) # dist with heuristic, position, actualDist, predecessor
     heapq.heappush(nextPosition, currentPosition)
 
     while currentPosition[1] != stop:
         currentPosition = heapq.heappop(nextPosition)
+        if tuple(currentPosition[1]) in predecessors:
+            continue
+        predecessors[tuple(currentPosition[1])] = currentPosition[3]
         for n in neighbours(currentPosition[1]):
             if tuple(n) not in predecessors:
-                predecessors[tuple(n)] = currentPosition[1]
-                nDist = currentPosition[0] + withTimeDist(currentPosition[1], n, 0)
-                # nDist = currentPosition[0] + charDist(n)
-                heapq.heappush(nextPosition, (nDist, n))
+                nDist = currentPosition[2] + withTimeDist(currentPosition[1], n, 0)
+                heapq.heappush(nextPosition, (nDist + distHeuristic(n), n, nDist, currentPosition[1]))
     
     path = []
     pathPosition = currentPosition[1]
