@@ -1,32 +1,35 @@
-import random
-import string
-import math
-from collections import Counter
-import re
+# Python 2.7
 import datetime
+import math
+import random
+import re
+import string
+from collections import Counter
+
 import sequenceUtils as su
+
 
 def addTime(word, averageGap):
     events = []
     time = datetime.datetime.now()
     for letter in word:
         factor = random.uniform(0.0, 2.0)
-        gap = averageGap * factor
+        gap = datetime.timedelta(0, averageGap * factor)
         time += gap
         events.append((letter, time))
     return events
 
 def randomSequenceWithTime(numberOfEvents, avgSecsBetweenEvents):
     word = su.randomword(numberOfEvents)
-    averageGap = datetime.timedelta(0, avgSecsBetweenEvents)
-    events = addTime(word, averageGap)
+    # averageGap = datetime.timedelta(0, avgSecsBetweenEvents)
+    events = addTime(word, avgSecsBetweenEvents)
     return events
         
 def insertTimeError(event, maxError, predecessorTime, successorTime):
     newTime = predecessorTime
     while newTime <= predecessorTime or newTime >= successorTime:
         factor = random.uniform(-0.5, 1.0)
-        newTime = event[1] + factor * maxError
+        newTime = event[1] + datetime.timedelta(0, factor * maxError)
     event = (event[0], newTime)
     return event
 
@@ -55,7 +58,8 @@ def insertErrorsWithTime(events, errorProbability, maxTimeErrorInSecs):
         
         # decide whether to insert an event error
         if random.uniform(0.0, 1.0) > errorProbability:
-            events[i] = insertTimeError(events[i], maxError, predTime, succTime)
+            #events[i] = insertTimeError(events[i], maxError, predTime, succTime)
+            events[i] = insertTimeError(events[i], maxTimeErrorInSecs, predTime, succTime)
             i += 1
             continue
 
@@ -69,12 +73,14 @@ def insertErrorsWithTime(events, errorProbability, maxTimeErrorInSecs):
             # events[i] = insertTimeError(events[i], maxError, predTime, succTime)
             succTime = events[i][1]
             newEvent = events[i]
-            newEvent = (random.choice(string.ascii_lowercase), predTime + (succTime - predTime)/2.0)  
-            newEvent = insertTimeError(newEvent, maxError, predTime, succTime)
+            newEvent = (random.choice(string.ascii_lowercase), predTime + (succTime - predTime)/ 2)  
+            #newEvent = insertTimeError(newEvent, maxError, predTime, succTime)
+            newEvent = insertTimeError(newEvent, maxTimeErrorInSecs, predTime, succTime)
             events.insert(i, newEvent)            
         elif change == 'replace':
             newEvent = (random.choice(string.ascii_lowercase), events[i][1])
-            events[i] = insertTimeError(newEvent, maxError, predTime, succTime)
+            #events[i] = insertTimeError(newEvent, maxError, predTime, succTime)
+            events[i] = insertTimeError(newEvent, maxTimeErrorInSecs, predTime, succTime)
         i += 1
     return events
 
@@ -87,14 +93,14 @@ def extractOriginalWithTime(path, timeSequences):
         # decide on event
         currentEvent = list(timeSequences[i][position[i]][0] for i in range(len(position)) if position[i] != lastPosition[i])
         noEvent = len(position) - len(currentEvent)
-        occuranceNumbers = Counter(currentEvent).most_common()
-        if noEvent > occuranceNumbers[0][1]:
+        occurrenceNumbers = Counter(currentEvent).most_common()
+        if noEvent > occurrenceNumbers[0][1]:
             continue
         # no clear solution -> star
-        elif len(occuranceNumbers) > 1 and occuranceNumbers[0][1] == occuranceNumbers[1][1]:
+        elif len(occurrenceNumbers) > 1 and occurrenceNumbers[0][1] == occurrenceNumbers[1][1]:
             resultEvent = '*'
         else:
-            resultEvent = occuranceNumbers[0][0]
+            resultEvent = occurrenceNumbers[0][0]
 
         #calculate time
         times = list(timeSequences[i][position[i]][1] for i in range(len(position)) if resultEvent == '*' or timeSequences[i][position[i]][0] == resultEvent)

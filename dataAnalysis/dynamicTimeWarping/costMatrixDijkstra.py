@@ -1,7 +1,7 @@
-from itertools import permutations
-import heapq
 import datetime
+import heapq
 import math
+from itertools import permutations
 
 # turn into global variables to prevent excessive copying
 allDirections = []
@@ -54,13 +54,14 @@ def standardDeviation(timestamps):
         timeDiff = ts - avTime
         standardDevInSecs += math.pow(timeDiff.total_seconds(), 2)
     standardDevInSecs /= len(timestamps)
-    return datetime.timedelta(0, standardDevInSecs)
+    #return datetime.timedelta(0, standardDevInSecs)
+    return standardDevInSecs
 
 def withTimeDist(lastPosition, nextPosition, noMatchTimePenalty):
     global sequences
     eventDist = spaceDistWithTime(lastPosition, nextPosition)
     timestamps = list(sequences[i][nextPosition[i]][1] for i in range(len(sequences)) if nextPosition[i] > lastPosition[i])
-    timePenalty = standardDeviation(timestamps).total_seconds() + (len(sequences) - len(timestamps)) * noMatchTimePenalty
+    timePenalty = standardDeviation(timestamps) + (len(sequences) - len(timestamps)) * noMatchTimePenalty
     return timePenalty + eventDist
 
 def initializeDirections(dimensions):
@@ -99,7 +100,7 @@ def aStarTimeWarpingPathWithTimestamps(eventSequence):
 
     # this will not impact the path, just the end cost
     startTimestamps = list(s[0][1] for s in sequences)
-    startDist = standardDeviation(startTimestamps).total_seconds() + charDistWithTime(start)
+    startDist = standardDeviation(startTimestamps) + charDistWithTime(start)
     currentPosition = (0, start, startDist, start) # dist with heuristic, position, actualDist, predecessor
     heapq.heappush(nextPosition, currentPosition)
 
@@ -194,5 +195,3 @@ def timeWarpingPathAStar(localSequences):
         path.append(pathPosition)
     
     return reversed(path)
-
-    

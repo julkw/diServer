@@ -1,8 +1,9 @@
-import random
-import string
 import math
-from collections import Counter
+import random
 import re
+import string
+from collections import Counter
+
 
 def randomword(length):
    letters = string.ascii_lowercase

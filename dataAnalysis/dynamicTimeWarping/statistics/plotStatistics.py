@@ -1,9 +1,11 @@
-import Levenshtein 
-import matplotlib.pyplot as plt
 import itertools as it
 
+import Levenshtein
+import matplotlib.pyplot as plt
+
+
 def collectAverages():
-    filename = "../../data/AStarMetricsEdited.csv" 
+    filename = "../../../data/AStarMetricsCombined.csv" 
     file = open(filename, "r") 
     data = []
     lines = file.readlines()
@@ -11,6 +13,7 @@ def collectAverages():
     scoreSum = 0
     timeSum = 0
     for line in lines:
+        line = line.replace('\n', '')
         words = line.split(',')
         
         users = int(words[0])
@@ -71,6 +74,7 @@ def main():
     plot(userNumberIndex, timeIndex, stringLengthIndex, data, "number of users", "time", "string length", 2)
     plot(errorProbabilityIndex, scoreIndex, userNumberIndex, data, "error probability", "Levenshtein score", "number of users", 3)
     plot(userNumberIndex, scoreIndex, stringLengthIndex, data, "number of users", "*-adjusted Levenshtein score", "sting length", 4)
+    plot(stringLengthIndex, timeIndex, errorProbabilityIndex, data, "length of string", "time", "error probability", 5)
     plt.show()    
 
 if __name__ == '__main__':
