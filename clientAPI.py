@@ -13,27 +13,39 @@ def add_event():
         return jsonify({'status' : 'True', 'message':'Insertion not successful'}), 400
     return jsonify({'status' : 'True', 'message':'Insertion successful'}), 201
 
-@client_api.route('/userAuthentiation', methods=['GET'])
+@client_api.route('/user/auth', methods=['POST'])
 def authenticate_user():
     # TODO
     return None
 
-@client_api.route('/appAuthentiation', methods=['GET'])
+@client_api.route('/app/auth', methods=['POST'])
 def authenticate_app():
     # TODO
     return None
 
-@client_api.route('/teamInfo/<teamid>', methods=['GET'])
+@client_api.route('/team/<teamid>', methods=['GET'])
 def get_team_info(teamid):
     # TODO
     return None
 
-@client_api.route('/playerInfo/<playerid>', methods=['GET'])
+@client_api.route('/game/<gameid>', methods=['GET'])
+def get_game_info(gameid):
+    # TODO: Change to fit API specification
+    print("got event")
+    events = db.getCompetitionEvents(gameid)
+    if events == None:
+        print("error in retrieving data")
+        return jsonify({'status' : 'True', 'message':'No data for this game'}), 400
+    print("found something, sending it back now")
+    print(events)
+    return jsonify(events), 201
+
+@client_api.route('/player/<playerid>', methods=['GET'])
 def get_player_info(playerid):
     # TODO
     return None
 
-@client_api.route('/seasonInfo/<userid>', methods=['GET'])
+@client_api.route('/season/<teamid>', methods=['GET'])
 def get_season_info(userid):
     # TODO
     return None

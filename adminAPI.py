@@ -26,7 +26,7 @@ def register_team():
 @admin_api.route('/gameRegistration', methods=['POST'])
 def register_game():
     dbEntry = db.insertIntoCollection('competitions', request.json)
-    return jsonify({'status': True, 'message': 'Game insertion successful.', 'gameid': dbEntry.inserted_id})
+    return jsonify({'status': True, 'message': 'Game insertion successful.', 'gameid': str(dbEntry.inserted_id)})
 
 @admin_api.route('/seasonRegistration', methods=['POST'])
 def register_season():
