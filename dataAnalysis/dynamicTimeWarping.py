@@ -9,9 +9,28 @@ import timeSequenceUtils as tsu
 
 
 def main():    
+
+    # test without time
+    originalSequence = su.randomword(15)
+    numberOfSequences = 5
+    sequences = []
+    for _ in range(numberOfSequences):
+        newSequence = su.insertErrors(0.3, originalSequence)
+        sequences.append(newSequence)
+    path = dij.timeWarpingPathAStar(sequences)
+    result = su.extractOriginal(path, sequences)
+    print(' ')
+    print('original: ' + originalSequence)
+    print('newGuess: ' + result)
+    print('new Guess rating: ' + str(dij.sequenceRating(originalSequence, result)))
+    print('userInputs and ratings:')
+    for s in sequences:
+        rating = dij.sequenceRating(result, s)
+        print(s + ": " + str(rating))        
+    return
+
     # test with Time
-    originalSequence = tsu.randomSequenceWithTime(10, 3)
-    print(originalSequence)
+    originalSequence = tsu.randomSequenceWithTime(15, 3)
     numberOfSequences = 3
     sequences = []
     for _ in range(numberOfSequences):
@@ -21,26 +40,16 @@ def main():
     path = dij.aStarTimeWarpingPathWithTimestamps(sequences)
     resultSequence = tsu.extractOriginalWithTime(path, sequences)
     print('original')
-    print(originalSequence)
+    tsu.printTimeSequence(originalSequence)
+    print(' ')
     print('guess')
-    print(resultSequence)
-    return
-
-    # test without time
-    originalSequence = su.randomword(15)
-    numberOfSequences = 5
-    sequences = []
-    for _ in range(numberOfSequences):
-        newSequence = su.insertErrors(0.3, originalSequence)
-        sequences.append(newSequence)
-        print(newSequence)
-    print(' ')
-    path = dij.timeWarpingPathAStar(sequences)
-    result = su.extractOriginal(path, sequences)
-    print(' ')
-    print('original: ' + originalSequence)
-    print('newGuess: ' + result)
-
+    tsu.printTimeSequence(resultSequence)
+    print(" ")
+    print(' rating of result: ' + str(dij.sequenceRatingWithTime(originalSequence, resultSequence)))
+    print('user ratings:')
+    for s in sequences:
+        rating = dij.sequenceRatingWithTime(resultSequence, s)
+        print(str(rating))        
     return
 
 if __name__ == '__main__':

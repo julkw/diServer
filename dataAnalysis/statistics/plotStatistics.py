@@ -1,6 +1,5 @@
 import itertools as it
 
-import Levenshtein
 import matplotlib.pyplot as plt
 
 
@@ -22,17 +21,18 @@ def collectAverages():
         original = words[3]
         result = words[4]
         time = float(words[5])
-        levenshteinScore = float(words[6])
+        #levenshteinScore = float(words[6])
         
         if threeCount == 0:
             timeSum = 0
-            scoreSum = 0
+            #scoreSum = 0
         
         timeSum += time
-        scoreSum += levenshteinScore
+        #scoreSum += levenshteinScore
         
         if threeCount == 2:
-            data.append([users, stringLength, errorProbability, timeSum/3.0, scoreSum/3.0])
+            data.append([users, stringLength, errorProbability, timeSum/3.0])
+#            data.append([users, stringLength, errorProbability, timeSum/3.0, scoreSum/3.0])
         
         threeCount += 1
         threeCount %= 3

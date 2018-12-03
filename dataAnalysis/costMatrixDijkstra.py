@@ -149,7 +149,6 @@ def timeWarpingPath(localSequences):
             nDist = currentPosition[0] + spaceDist(currentPosition[1], n)
             heapq.heappush(nextPosition, (nDist, n, currentPosition[1]))
     
-    print('Djkstra path cost: ' + str(currentPosition[0]))
     path = []
     pathPosition = currentPosition[1]
     path.append(pathPosition)
@@ -186,7 +185,6 @@ def timeWarpingPathAStar(localSequences):
                 nDist = currentPosition[2] + spaceDist(currentPosition[1], n)
                 heapq.heappush(nextPosition, (nDist + distHeuristic(n), n, nDist, currentPosition[1]))
     
-    print('A* path cost: ' + str(currentPosition[2]))
     path = []
     pathPosition = currentPosition[1]
     path.append(pathPosition)
@@ -195,3 +193,40 @@ def timeWarpingPathAStar(localSequences):
         path.append(pathPosition)
     
     return reversed(path)
+
+def sequenceRating(finalSequence, userSequence):
+    path = timeWarpingPathAStar([finalSequence, userSequence])
+    cost = 0
+    lastPosition = [-1, -1]
+    for position in path:
+        if position[0] == lastPosition[0] or position[1] == lastPosition[1]:
+            cost += 1
+        elif userSequence[position[1]] == '*':
+            cost += 0.5
+        elif finalSequence[position[0]] != userSequence[position[1]]:
+            cost += 1
+        lastPosition = position
+    # normalize errors 
+    rating = float(cost) / float(len(finalSequence))
+    return rating
+
+def sequenceRatingWithTime(finalSequence, userSequence):
+    path = aStarTimeWarpingPathWithTimestamps([finalSequence, userSequence])
+    cost = 0
+    lastPosition = [-1, -1]
+    for position in path:
+        # event type cost
+        if position[0] == lastPosition[0] or position[1] == lastPosition[1]:
+            cost += 1
+        else:
+            if userSequence[position[1]][0] == '*':
+                cost += 0.5
+            elif finalSequence[position[0]][0] != userSequence[position[1]][0]:
+                cost += 1
+            # this means that 1 sec differnece in time is equally as bad as having the wrong event type
+            timeCost = 0.5 * (abs(finalSequence[position[0]][1] - userSequence[position[1]][1]).total_seconds())
+            cost += timeCost
+        lastPosition = position
+    # normalize errors 
+    rating = float(cost) / float(len(finalSequence))
+    return rating

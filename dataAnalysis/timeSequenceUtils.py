@@ -8,6 +8,9 @@ from collections import Counter
 
 import sequenceUtils as su
 
+def printTimeSequence(timeSequence):
+    for event in timeSequence:
+        print(event[0] + " " + str(event[1]))
 
 def addTime(word, averageGap):
     events = []
