@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def collectAverages():
-    filename = "../../../data/AStarMetricsCombined.csv" 
+    filename = "data/moreThan3Reps.txt" 
     file = open(filename, "r") 
     data = []
     lines = file.readlines()
@@ -21,18 +21,17 @@ def collectAverages():
         original = words[3]
         result = words[4]
         time = float(words[5])
-        #levenshteinScore = float(words[6])
+        score = float(words[6])
         
         if threeCount == 0:
             timeSum = 0
-            #scoreSum = 0
+            scoreSum = 0
         
         timeSum += time
-        #scoreSum += levenshteinScore
+        scoreSum += score
         
         if threeCount == 2:
-            data.append([users, stringLength, errorProbability, timeSum/3.0])
-#            data.append([users, stringLength, errorProbability, timeSum/3.0, scoreSum/3.0])
+            data.append([users, stringLength, errorProbability, timeSum/3.0, scoreSum/3.0])
         
         threeCount += 1
         threeCount %= 3
@@ -72,9 +71,9 @@ def main():
 
     plot(userNumberIndex, timeIndex, errorProbabilityIndex, data, "number of users", "time", "error probability", 1)
     plot(userNumberIndex, timeIndex, stringLengthIndex, data, "number of users", "time", "string length", 2)
-    plot(errorProbabilityIndex, scoreIndex, userNumberIndex, data, "error probability", "Levenshtein score", "number of users", 3)
-    plot(userNumberIndex, scoreIndex, stringLengthIndex, data, "number of users", "*-adjusted Levenshtein score", "sting length", 4)
-    plot(stringLengthIndex, timeIndex, errorProbabilityIndex, data, "length of string", "time", "error probability", 5)
+    plot(stringLengthIndex, timeIndex, errorProbabilityIndex, data, "length of string", "time", "error probability", 3)
+    plot(stringLengthIndex, timeIndex, userNumberIndex, data, "length of string", "time", "number of users", 4)
+    plot(userNumberIndex, scoreIndex, errorProbabilityIndex, data, "number of users", "rating of result, normalized by string length", "error probability", 5)
     plt.show()    
 
 if __name__ == '__main__':
