@@ -3,14 +3,10 @@ import itertools as it
 import matplotlib.pyplot as plt
 
 
-def collectAverages():
-    filename = "data/moreThan3Reps.txt" 
+def dataFromFile(filename):
     file = open(filename, "r") 
     data = []
     lines = file.readlines()
-    threeCount = 0
-    scoreSum = 0
-    timeSum = 0
     for line in lines:
         line = line.replace('\n', '')
         words = line.split(',')
@@ -18,23 +14,13 @@ def collectAverages():
         users = int(words[0])
         stringLength = int(words[1])
         errorProbability = float(words[2])
-        original = words[3]
-        result = words[4]
+        # original = words[3]
+        # result = words[4]
         time = float(words[5])
         score = float(words[6])
         
-        if threeCount == 0:
-            timeSum = 0
-            scoreSum = 0
-        
-        timeSum += time
-        scoreSum += score
-        
-        if threeCount == 2:
-            data.append([users, stringLength, errorProbability, timeSum/3.0, scoreSum/3.0])
-        
-        threeCount += 1
-        threeCount %= 3
+        data.append([users, stringLength, errorProbability, time, score])
+
     return data
 
 def plot(xIndex, yIndex, aggregateIndex, data, xLabel = '', yLabel = '', aggregateLable = '', figureNumber = 0):
@@ -46,14 +32,11 @@ def plot(xIndex, yIndex, aggregateIndex, data, xLabel = '', yLabel = '', aggrega
         valuePairs.sort()
         xList = []
         yList = []
-        for xValue, yValues in it.groupby(valuePairs, lambda x: x[0]):
+        for xValue, yPairs in it.groupby(valuePairs, lambda x: x[0]):
             xList.append(xValue)
-            sum = 0
-            divisor = 0
-            for value in yValues:
-                sum += value[1]
-                divisor += 1
-            yList.append(sum / divisor)
+            yValues = list(v[1] for v in yPairs)
+            ySum = sum(yValues)
+            yList.append(ySum/float(len(yValues)))
 
         line = plt.plot(xList, yList, label = str(dv))
         plt.legend(title=aggregateLable)
@@ -61,7 +44,8 @@ def plot(xIndex, yIndex, aggregateIndex, data, xLabel = '', yLabel = '', aggrega
     plt.ylabel(yLabel)
 
 def main():
-    data = collectAverages()
+    filename = "data/moreThan3Reps.txt" 
+    data = dataFromFile(filename)
     
     userNumberIndex = 0
     stringLengthIndex = 1
@@ -74,6 +58,10 @@ def main():
     plot(stringLengthIndex, timeIndex, errorProbabilityIndex, data, "length of string", "time", "error probability", 3)
     plot(stringLengthIndex, timeIndex, userNumberIndex, data, "length of string", "time", "number of users", 4)
     plot(userNumberIndex, scoreIndex, errorProbabilityIndex, data, "number of users", "rating of result, normalized by string length", "error probability", 5)
+    
+    filename2 = "data/longStrings.txt"
+    dataTwo = dataFromFile(filename2)
+    plot(stringLengthIndex, timeIndex, errorProbabilityIndex, dataTwo, "length of string", "time", "error probability", 6)
     plt.show()    
 
 if __name__ == '__main__':
