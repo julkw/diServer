@@ -30,6 +30,8 @@ def randomSequenceWithTime(numberOfEvents, avgSecsBetweenEvents):
         
 def insertTimeError(event, maxError, predecessorTime, successorTime):
     newTime = predecessorTime
+    if maxError == 0:
+        return newTime
     while newTime <= predecessorTime or newTime >= successorTime:
         factor = random.uniform(-0.5, 1.0)
         newTime = event[1] + datetime.timedelta(0, factor * maxError)

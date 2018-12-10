@@ -11,7 +11,8 @@ def register_app():
 @admin_api.route('/userRegistration', methods=['POST'])
 def register_user():
     # TODO
-    return None
+    dbEntry = db.insertIntoCollection('users', request.json)
+    return jsonify({'status': True, 'message': 'User insertion successful.', 'userid': str(dbEntry.inserted_id)}), 201
 
 @admin_api.route('/playerRegistration', methods=['POST'])
 def register_player():
@@ -26,7 +27,7 @@ def register_team():
 @admin_api.route('/gameRegistration', methods=['POST'])
 def register_game():
     dbEntry = db.insertIntoCollection('competitions', request.json)
-    return jsonify({'status': True, 'message': 'Game insertion successful.', 'gameid': str(dbEntry.inserted_id)})
+    return jsonify({'status': True, 'message': 'Game insertion successful.', 'gameid': str(dbEntry.inserted_id)}), 201
 
 @admin_api.route('/seasonRegistration', methods=['POST'])
 def register_season():

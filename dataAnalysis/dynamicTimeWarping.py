@@ -10,25 +10,6 @@ import timeSequenceUtils as tsu
 
 def main():    
 
-    # test without time
-    originalSequence = su.randomword(15)
-    numberOfSequences = 5
-    sequences = []
-    for _ in range(numberOfSequences):
-        newSequence = su.insertErrors(0.3, originalSequence)
-        sequences.append(newSequence)
-    path = dij.timeWarpingPathAStar(sequences)
-    result = su.extractOriginal(path, sequences)
-    print(' ')
-    print('original: ' + originalSequence)
-    print('newGuess: ' + result)
-    print('new Guess rating: ' + str(dij.sequenceRating(originalSequence, result)))
-    print('userInputs and ratings:')
-    for s in sequences:
-        rating = dij.sequenceRating(result, s)
-        print(s + ": " + str(rating))        
-    return
-
     # test with Time
     originalSequence = tsu.randomSequenceWithTime(15, 3)
     numberOfSequences = 3
@@ -51,6 +32,27 @@ def main():
         rating = dij.sequenceRatingWithTime(resultSequence, s)
         print(str(rating))        
     return
+
+
+    # test without time
+    originalSequence = su.randomword(15)
+    numberOfSequences = 5
+    sequences = []
+    for _ in range(numberOfSequences):
+        newSequence = su.insertErrors(0.2, originalSequence)
+        sequences.append(newSequence)
+    path = dij.timeWarpingPathAStar(sequences)
+    result = su.extractOriginal(path, sequences)
+    print(' ')
+    print('original: ' + originalSequence)
+    print('newGuess: ' + result)
+    print('new Guess rating: ' + str(dij.sequenceRating(originalSequence, result)))
+    print('userInputs and ratings:')
+    for s in sequences:
+        rating = dij.sequenceRating(result, s)
+        print(s + ": " + str(rating))        
+    return
+
 
 if __name__ == '__main__':
   main()
