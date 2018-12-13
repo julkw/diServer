@@ -1,4 +1,3 @@
-# Python 2.7
 import datetime
 import math
 import random
@@ -31,7 +30,7 @@ def randomSequenceWithTime(numberOfEvents, avgSecsBetweenEvents):
 def insertTimeError(event, maxError, predecessorTime, successorTime):
     newTime = predecessorTime
     if maxError == 0:
-        return newTime
+        return (event[0], newTime)
     while newTime <= predecessorTime or newTime >= successorTime:
         factor = random.uniform(-0.5, 1.0)
         newTime = event[1] + datetime.timedelta(0, factor * maxError)
@@ -63,7 +62,7 @@ def insertErrorsWithTime(events, errorProbability, maxTimeErrorInSecs):
         
         # decide whether to insert an event error
         if random.uniform(0.0, 1.0) > errorProbability:
-            #events[i] = insertTimeError(events[i], maxError, predTime, succTime)
+            # no event error
             events[i] = insertTimeError(events[i], maxTimeErrorInSecs, predTime, succTime)
             i += 1
             continue
@@ -75,23 +74,18 @@ def insertErrorsWithTime(events, errorProbability, maxTimeErrorInSecs):
             continue
         elif change == 'insert':
             # this is revisited in the next step as the insertion is in front of the current element
-            # events[i] = insertTimeError(events[i], maxError, predTime, succTime)
             succTime = events[i][1]
             newEvent = events[i]
             newEvent = (random.choice(string.ascii_lowercase), predTime + (succTime - predTime)/ 2)  
-            #newEvent = insertTimeError(newEvent, maxError, predTime, succTime)
             newEvent = insertTimeError(newEvent, maxTimeErrorInSecs, predTime, succTime)
             events.insert(i, newEvent)            
         elif change == 'replace':
             newEvent = (random.choice(string.ascii_lowercase), events[i][1])
-            #events[i] = insertTimeError(newEvent, maxError, predTime, succTime)
             events[i] = insertTimeError(newEvent, maxTimeErrorInSecs, predTime, succTime)
         i += 1
     return events
 
 def extractOriginalWithTime(path, timeSequences):
-    # since spaces are penalized, step lengths don't make much sense anymore
-    # therefore we can just follow the path and make a decision for every node
     result = []
     lastPosition = list(-1 for _ in range(len(timeSequences)))
     for position in path:

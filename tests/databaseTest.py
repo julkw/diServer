@@ -1,6 +1,8 @@
 import datetime
 import requests
-
+import sys
+# change path to enable finding the next import
+sys.path.append('../')
 import dataAnalysis.timeSequenceUtils as tsu
 
 
@@ -29,25 +31,24 @@ def send_event(time, data, userID, gameID):
     resp = requests.post('http://localhost:5000/event', json=event)
     if resp.status_code != 201:
         print('sending of event failed')
-        #raise ApiError('POST /tasks/ {}'.format(resp.status_code))
     else:
         print('Sent ' + str(data))
 
 def main():
-    gameID = "noTimeThrowawayTestGame5"
+    gameID = "testGame"
     users = list((a, a/float(20)) for a in range(1, 6))
     setupGame(gameID)
     realGame = tsu.randomSequenceWithTime(10, 0)
     
     for user in users:
-        userID = "noTimethrowawayUser" + str(user[0])
+        userID = "tesUser" + str(user[0])
         setupUser(userID)
         userInput = tsu.insertErrorsWithTime(realGame, user[1], 0)
         # the 2 is chosen for no particular reason here
         for event in userInput:
             send_event(event[1], event[0], userID, gameID)
     response = requests.get('http://localhost:5000/game/' + gameID)
-    print(response) #-> for some reason just status code
+    print(response) 
     return
     
 

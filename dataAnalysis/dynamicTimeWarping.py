@@ -15,7 +15,6 @@ def main():
     numberOfSequences = 3
     sequences = []
     for _ in range(numberOfSequences):
-        #newSequence = tsu.insertErrorsWithTime(originalSequence.copy(), 0.3, 1.5)
         newSequence = tsu.insertErrorsWithTime(list(originalSequence), 0.3, 1.5)
         sequences.append(newSequence)
     path = dij.aStarTimeWarpingPathWithTimestamps(sequences)

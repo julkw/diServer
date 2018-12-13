@@ -10,6 +10,7 @@ def add_event():
         return jsonify({'status' : 'True', 'message':'Wrong document type'}), 400
     success = db.insertEvent(request.json)
     if not success:
+        print("not all fields")
         return jsonify({'status' : 'True', 'message':'Insertion not successful'}), 400
     return jsonify({'status' : 'True', 'message':'Insertion successful'}), 201
 

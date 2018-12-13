@@ -36,15 +36,12 @@ def matchSequences(path, sequences):
             else:
                 spacedSequences[i] = spacedSequences[i] + ' '
         lastPosition = position
-    #for s in spacedSequences:
-    #    print(s)
     return spacedSequences
 
 def extractOriginal(path, sequences):
     result = ''
     spacedSequences = matchSequences(path, sequences)
     index = 0
-    # lastLetters = list(s[0] for s in spacedSequences)
     while index < len(spacedSequences[0]):
         # decide on length on block
         stepLengths = []
@@ -58,16 +55,11 @@ def extractOriginal(path, sequences):
         # decide on event
         events = ''
         
-        # make sure every user's last entry is used
-         #for sIndex in range(len(spacedSequences)):
-         #    if spacedSequences[sIndex][index] == ' ':
-         #        spacedSequences[sIndex] = spacedSequences[sIndex][:index] + lastLetters[sIndex] + spacedSequences[sIndex][index + 1:]
         # find most frequent entries in block
         for i in range(index, min(len(spacedSequences[0]), index + blockLength)):
             for sIndex in range(len(spacedSequences)):
                 if spacedSequences[sIndex][i] != ' ':
                     events = events + spacedSequences[sIndex][i]
-                    # lastLetters[sIndex] = spacedSequences[sIndex][i]
         occuranceNumbers = Counter(events).most_common()
         # no clear solution -> star
         if len(occuranceNumbers) > 1 and occuranceNumbers[0][1] == occuranceNumbers[1][1]:
